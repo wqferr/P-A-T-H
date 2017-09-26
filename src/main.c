@@ -1,31 +1,22 @@
 #include <stdio.h>
 
 #include "struct/list.h"
+#include "struct/vec2.h"
 
-void print_int(void *ref) {
-	int *i = (int *) ref;
-	printf("%d\n", *i);
+void print_v2(vec2 v) {
+	printf("(%hd, %hd)\n", v.x, v.y);
 }
 
 int main(int argc, char const *argv[]) {
-	list *l = list_create(sizeof(int));
-	int x;
+	vec2 v = {1, 1};
+	vec2 u = {2, 1};
+	vec2 w = v;
+	print_v2(v);
+	printf("%f\n", vec2_norm(v));
+	vec2_scale(&w, 2);
+	print_v2(w);
+	vec2_sub(&w, u);
+	print_v2(w);
 
-	list_ensure_capacity(l, 10);
-	for (x = 0; x < 10; x++) {
-		list_push_back(l, &x);
-		list_push_front(l, &x);
-	}
-
-	list_foreach(l, &print_int);
-
-	printf("---\n");
-
-	while (!list_is_empty(l)) {
-		list_pop_back(l, &x);
-		printf("%zu - %d\n", list_get_length(l), x);
-	}
-
-	list_destroy(l);
 	return 0;
 }
