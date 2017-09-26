@@ -1,22 +1,27 @@
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 
 #include "struct/list.h"
 #include "struct/vec2.h"
-
-void print_v2(vec2 v) {
-	printf("(%hd, %hd)\n", v.x, v.y);
-}
+#include "struct/maxheap.h"
 
 int main(int argc, char const *argv[]) {
-	vec2 v = {1, 1};
-	vec2 u = {2, 1};
-	vec2 w = v;
-	print_v2(v);
-	printf("%f\n", vec2_norm(v));
-	vec2_scale(&w, 2);
-	print_v2(w);
-	vec2_sub(&w, u);
-	print_v2(w);
+	heap *h = heap_create(sizeof(int));
+	int x = 0;
+	int i;
+	srand(time(NULL));
 
+	for (i = 0; i < 100; i++) {
+		x = rand() % 1000;
+		heap_add(h, &x, x);
+	}
+
+	while (!heap_is_empty(h)) {
+		printf("%d ", heap_pop(h, &x));
+		printf("%d\n", x);
+	}
+
+	heap_destroy(h);
 	return 0;
 }
