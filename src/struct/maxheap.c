@@ -21,14 +21,14 @@ struct heap {
 
 struct heap_node {
 	void *data;
-	int priority;
+	float priority;
 };
 
 
 
 void _heap_resize(heap *h, size_t cap);
 void _heap_try_shrink(heap *h);
-void _heap_add_node(heap *h, const void *elm, int pr);
+void _heap_add_node(heap *h, const void *elm, float pr);
 void _heap_swp(heap *h, size_t i, size_t j);
 
 heap *heap_create(size_t elm_size) {
@@ -64,7 +64,7 @@ bool heap_is_empty(const heap *h) {
 }
 
 
-bool heap_add(heap *h, const void *elm, int pr) {
+bool heap_add(heap *h, const void *elm, float pr) {
 	size_t cur, par;
 	if (elm == NULL) {
 		return false;
@@ -131,7 +131,7 @@ void _heap_try_shrink(heap *h) {
 	}
 }
 
-void _heap_add_node(heap *h, const void *elm, int pr) {
+void _heap_add_node(heap *h, const void *elm, float pr) {
 	heap_node n;
 	n.data = malloc(h->elm_size);
 	memcpy(n.data, elm, h->elm_size);

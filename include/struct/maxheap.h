@@ -14,7 +14,7 @@ void heap_ensure_capacity(heap *h, size_t cap);
 size_t heap_get_size(const heap *h);
 bool heap_is_empty(const heap *h);
 
-bool heap_add(heap *h, const void *elm, int pr);
+bool heap_add(heap *h, const void *elm, float pr);
 int heap_pop(heap *h, void *out);
 
 #endif
