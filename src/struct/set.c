@@ -71,7 +71,7 @@ set *set_create(size_t elm_size, hash_f hash, cmp_f compare) {
 void set_destroy(set *s) {
 	size_t i;
 	for (i = 0; i < s->cap; i++) {
-		if (!s->elm[i].empty) {
+		if (!s->elm[i].empty && !s->elm[i].removed) {
 			free(s->elm[i].data);
 		}
 	}

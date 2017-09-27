@@ -30,8 +30,12 @@ int main(int argc, char const *argv[]) {
 
 	srand(time(NULL));
 	for (i = 0; i < N; i++) {
-		x = rand() % (10*N);
-		set_insert(s, &x);
+		x = rand() % (N/2);
+		if (set_contains(s, &x)) {
+			set_delete(s, &x);
+		} else {
+			set_insert(s, &x);	
+		}
 		printf("%d\t%zu\n", x, set_get_size(s));
 	}
 	printf("\n%zu distinct numbers\n", set_get_size(s));
