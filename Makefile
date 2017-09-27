@@ -82,7 +82,7 @@ C_FLAGS = -Wall -Werror -L$(LIB_DIR) -I$(INC_DIR) $(addprefix -l,$(LIBS))
 # Flags for running valgrind
 #
 
-VALGRIND_FLAGS := -v --leak-check=full --show-leak-kinds=all
+VALGRIND_FLAGS := --leak-check=full --show-leak-kinds=all
 
 
 #
