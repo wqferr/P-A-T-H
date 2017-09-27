@@ -87,7 +87,6 @@ bool heap_add(heap *h, const void *elm, float pr) {
 
 int heap_pop(heap *h, void *out) {
 	int pr;
-	size_t cur, new_parent;
 	if (h->size == 0) {
 		return 0;
 	}
@@ -101,21 +100,6 @@ int heap_pop(heap *h, void *out) {
 	h->elm[0] = h->elm[h->size];
 
 	_heap_fix(h, 0);
-	// TODO redo this
-	// cur = -1;
-	// new_parent = 0;
-	// while (new_parent != cur && (cur = new_parent) < h->size) {
-	// 	if (LCHILD(cur) < h->size && _heap_cmp(h, LCHILD(cur), new_parent)) {
-	// 		new_parent = LCHILD(cur);
-	// 	}
-	// 	if (RCHILD(cur) < h->size && _heap_cmp(h, RCHILD(cur), new_parent)) {
-	// 		new_parent = RCHILD(cur);
-	// 	}
-	// 	if (new_parent != cur) {
-	// 		_heap_swp(h, cur, new_parent);
-	// 	}
-	// }
-
 	_heap_try_shrink(h);
 	return pr;
 }

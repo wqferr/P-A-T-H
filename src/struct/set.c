@@ -84,6 +84,7 @@ bool set_set_load_factor(set *s, float lf) {
 		return false;
 	}
 	s->load_factor = lf;
+	return true;
 }
 
 void set_ensure_capacity(set *s, size_t cap) {
@@ -206,7 +207,6 @@ int _set_find_elm_idx(
 	int hash,
 	size_t *idx) {
 
-	bool done = false;
 	size_t i;
 	size_t start;
 
