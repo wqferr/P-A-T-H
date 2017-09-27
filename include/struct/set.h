@@ -1,6 +1,7 @@
 #ifndef SET_H
 #define SET_H 1
 
+#include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 
@@ -10,7 +11,7 @@
 
 typedef struct set set;
 
-typedef int (*hash_f)(const void *);
+typedef int32_t (*hash_f)(const void *);
 typedef int (*cmp_f)(const void *, const void *);
 
 set *set_create(size_t elm_size, hash_f hash, cmp_f compare);

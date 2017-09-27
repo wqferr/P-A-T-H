@@ -26,7 +26,7 @@ struct set {
 
 struct set_node {
 	void *data;
-	int hash;
+	int32_t hash;
 	bool empty;
 	bool removed;
 };
@@ -36,14 +36,14 @@ void _set_resize(set *s, size_t cap);
 int _set_find_empty_idx(
 	const set *s,
 	const void *elm,
-	int hash,
+	int32_t hash,
 	size_t *idx);
 int _set_find_elm_idx(
 	const set *s,
 	const void *elm,
-	int hash,
+	int32_t hash,
 	size_t *idx);
-void _set_create_node(set *s, size_t idx, const void *elm, int hash);
+void _set_create_node(set *s, size_t idx, const void *elm, int32_t hash);
 
 
 set *set_create(size_t elm_size, hash_f hash, cmp_f compare) {
@@ -61,7 +61,7 @@ set *set_create(size_t elm_size, hash_f hash, cmp_f compare) {
 		s->elm[i].empty = true;
 		s->elm[i].removed = false;
 		s->elm[i].data = NULL;
-		s->elm[i].hash = -1;
+		s->elm[i].hash = 0;
 	}
 	s->cap = SET_INITIAL_CAP;
 
@@ -106,7 +106,7 @@ bool set_is_full(const set *s) {
 }
 
 bool set_insert(set *s, const void *elm) {
-	int hash = s->hash(elm);
+	int32_t hash = s->hash(elm);
 	int idx_res;
 	size_t idx;
 
@@ -126,7 +126,7 @@ bool set_insert(set *s, const void *elm) {
 
 void *set_remove(set *s, const void *elm) {
 	size_t idx;
-	int hash = s->hash(elm);
+	int32_t hash = s->hash(elm);
 	int idx_res = _set_find_elm_idx(s, elm, hash, &idx);
 
 	if (idx_res == SET_ELM_FOUND) {
@@ -142,7 +142,7 @@ void set_delete(set *s, const void *elm) {
 }
 
 bool set_contains(const set *s, const void *elm) {
-	int hash = s->hash(elm);
+	int32_t hash = s->hash(elm);
 	size_t idx;
 	return _set_find_elm_idx(s, elm, hash, &idx) == SET_ELM_FOUND;
 }
@@ -167,7 +167,7 @@ void _set_resize(set *s, size_t cap) {
 		s->elm[i].empty = true;
 		s->elm[i].removed = false;
 		s->elm[i].data = NULL;
-		s->elm[i].hash = -1;
+		s->elm[i].hash = 0;
 	}
 	for (i = 0; i < old_cap; i++) {
 		if (!aux[i].empty && !aux[i].removed) {
@@ -181,7 +181,7 @@ void _set_resize(set *s, size_t cap) {
 int _set_find_empty_idx(
 	const set *s,
 	const void *elm,
-	int hash,
+	int32_t hash,
 	size_t *idx) {
 
 	size_t i;
@@ -204,7 +204,7 @@ int _set_find_empty_idx(
 int _set_find_elm_idx(
 	const set *s,
 	const void *elm,
-	int hash,
+	int32_t hash,
 	size_t *idx) {
 
 	size_t i;
@@ -226,7 +226,7 @@ int _set_find_elm_idx(
 	return SET_ELM_NOT_FOUND;
 }
 
-void _set_create_node(set *s, size_t idx, const void *elm, int hash) {
+void _set_create_node(set *s, size_t idx, const void *elm, int32_t hash) {
 	s->elm[idx].data = malloc(s->elm_size);
 	memcpy(s->elm[idx].data, elm, s->elm_size);
 	s->elm[idx].empty = false;
