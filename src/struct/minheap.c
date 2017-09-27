@@ -1,4 +1,4 @@
-#include "struct/maxheap.h"
+#include "struct/minheap.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -7,10 +7,10 @@ typedef struct heap_node heap_node;
 
 #define LCHILD(p) (2*p+1)
 #define RCHILD(p) (2*p+2)
-#define PARENT(c) (c/2)
+#define PARENT(c) ((c-1)/2)
 
-#define _heap_gt(h, i, j) (\
-	(h)->elm[(i)].priority > (h)->elm[(j)].priority)
+#define _heap_cmp(h, i, j) (\
+	(h)->elm[(i)].priority < (h)->elm[(j)].priority)
 
 struct heap {
 	heap_node *elm;
@@ -30,6 +30,7 @@ void _heap_resize(heap *h, size_t cap);
 void _heap_try_shrink(heap *h);
 void _heap_add_node(heap *h, const void *elm, float pr);
 void _heap_swp(heap *h, size_t i, size_t j);
+void _heap_fix(heap *h, size_t c);
 
 heap *heap_create(size_t elm_size) {
 	heap *h = malloc(sizeof(*h));
@@ -75,8 +76,7 @@ bool heap_add(heap *h, const void *elm, float pr) {
 	_heap_add_node(h, elm, pr);
 
 	cur = h->size;
-	while(cur != 0
-			&& _heap_gt(h, cur, (par=PARENT(cur)))) {
+	while(cur != 0 && _heap_cmp(h, cur, (par=PARENT(cur)))) {
 		_heap_swp(h, cur, par);
 		cur = par;
 	}
@@ -87,7 +87,7 @@ bool heap_add(heap *h, const void *elm, float pr) {
 
 int heap_pop(heap *h, void *out) {
 	int pr;
-	size_t cur, max_child;
+	size_t cur, new_parent;
 	if (h->size == 0) {
 		return 0;
 	}
@@ -100,19 +100,21 @@ int heap_pop(heap *h, void *out) {
 	h->size--;
 	h->elm[0] = h->elm[h->size];
 
-	cur = -1;
-	max_child = 0;
-	while (max_child != cur && (cur = max_child) < h->size) {
-		if (LCHILD(cur) < h->size && _heap_gt(h, LCHILD(cur), max_child)) {
-			max_child = LCHILD(cur);
-		}
-		if (RCHILD(cur) < h->size && _heap_gt(h, RCHILD(cur), max_child)) {
-			max_child = RCHILD(cur);
-		}
-		if (max_child != cur) {
-			_heap_swp(h, cur, max_child);
-		}
-	}
+	_heap_fix(h, 0);
+	// TODO redo this
+	// cur = -1;
+	// new_parent = 0;
+	// while (new_parent != cur && (cur = new_parent) < h->size) {
+	// 	if (LCHILD(cur) < h->size && _heap_cmp(h, LCHILD(cur), new_parent)) {
+	// 		new_parent = LCHILD(cur);
+	// 	}
+	// 	if (RCHILD(cur) < h->size && _heap_cmp(h, RCHILD(cur), new_parent)) {
+	// 		new_parent = RCHILD(cur);
+	// 	}
+	// 	if (new_parent != cur) {
+	// 		_heap_swp(h, cur, new_parent);
+	// 	}
+	// }
 
 	_heap_try_shrink(h);
 	return pr;
@@ -142,7 +144,7 @@ void _heap_add_node(heap *h, const void *elm, float pr) {
 
 void _max_heapify(heap *h, size_t c) {
 	size_t p;
-	while(c != 0 && _heap_gt(h, c, (p=PARENT(c)))) {
+	while(c != 0 && _heap_cmp(h, c, (p=PARENT(c)))) {
 		_heap_swp(h, c, p);
 		c = p;
 	}
@@ -152,4 +154,21 @@ void _heap_swp(heap *h, size_t i, size_t j) {
 	heap_node n = h->elm[i];
 	h->elm[i] = h->elm[j];
 	h->elm[j] = n;
+}
+
+void _heap_fix(heap *h, size_t c) {
+	size_t new_parent = c;
+	size_t lchild = LCHILD(c);
+	size_t rchild = RCHILD(c);
+	if (lchild < h->size && _heap_cmp(h, lchild, new_parent)) {
+		new_parent = lchild;
+	}
+	if (rchild < h->size && _heap_cmp(h, rchild, new_parent)) {
+		new_parent = rchild;
+	}
+
+	if (new_parent != c) {
+		_heap_swp(h, new_parent, c);
+		_heap_fix(h, new_parent);
+	}
 }

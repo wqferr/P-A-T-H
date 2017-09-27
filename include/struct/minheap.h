@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-/* Max heap structure */
+/* Min heap structure */
 typedef struct heap heap;
 
 heap *heap_create(size_t elm_size);
