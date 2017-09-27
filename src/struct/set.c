@@ -59,6 +59,9 @@ set *set_create(size_t elm_size, hash_f hash, cmp_f compare) {
 	s->elm = malloc(SET_INITIAL_CAP * sizeof(*s->elm));
 	for (i = 0; i < SET_INITIAL_CAP; i++) {
 		s->elm[i].empty = true;
+		s->elm[i].removed = false;
+		s->elm[i].data = NULL;
+		s->elm[i].hash = -1;
 	}
 	s->cap = SET_INITIAL_CAP;
 
@@ -113,6 +116,7 @@ bool set_insert(set *s, const void *elm) {
 	if (idx_res == SET_DUPL_INSERTION) {
 		memcpy(s->elm[idx].data, elm, s->elm_size);
 	} else {
+		s->size++;
 		_set_create_node(s, idx, elm, hash);
 	}
 
@@ -154,17 +158,20 @@ void _set_resize(set *s, size_t cap) {
 	}
 
 	aux = malloc(old_cap * sizeof(*aux));
-	memcpy(aux, &s->elm[i], old_cap * sizeof(*aux));
-	s->elm = realloc(s->elm, cap * sizeof(*s->elm));
+	memcpy(aux, s->elm, old_cap * sizeof(*aux));
+	s->elm = realloc(s->elm, cap*sizeof(*s->elm));
 	s->cap = cap;
 
 	for (i = 0; i < s->cap; i++) {
 		s->elm[i].empty = true;
+		s->elm[i].removed = false;
+		s->elm[i].data = NULL;
+		s->elm[i].hash = -1;
 	}
 	for (i = 0; i < old_cap; i++) {
 		if (!aux[i].empty && !aux[i].removed) {
 			_set_find_empty_idx(s, aux[i].data, aux[i].hash, &idx);
-			_set_create_node(s, idx, aux[i].data, aux[i].hash);
+			s->elm[idx] = aux[i];
 		}
 	}
 	free(aux);
@@ -181,7 +188,8 @@ int _set_find_empty_idx(
 		return SET_FULL;
 	}
 	i = ((hash % s->cap) + s->cap) % s->cap;
-	while (!s->elm[i].empty) {
+
+	while (!(s->elm[i].empty || s->elm[i].removed)) {
 		if (s->elm[i].hash == hash && s->compare(elm, s->elm[i].data) == 0) {
 			*idx = i;
 			return SET_DUPL_INSERTION;
@@ -205,7 +213,7 @@ int _set_find_elm_idx(
 	start = ((hash % s->cap) + s->cap) % s->cap;
 	i = start;
 	do {
-		if (!s->elm[i].empty && !s->elm[i].removed) {
+		if (!(s->elm[i].empty || s->elm[i].removed)) {
 			if (s->elm[i].hash == hash
 				&& s->compare(s->elm[i].data, elm) == 0) {
 
@@ -224,8 +232,6 @@ void _set_create_node(set *s, size_t idx, const void *elm, int hash) {
 	s->elm[idx].empty = false;
 	s->elm[idx].removed = false;
 	s->elm[idx].hash = hash;
-
-	s->size++;
 
 	if (((float) s->size / s->cap) > s->load_factor) {
 		_set_resize(s, 2*s->cap);

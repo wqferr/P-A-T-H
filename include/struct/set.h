@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 
-#define SET_INITIAL_CAP 50
+#define SET_INITIAL_CAP 20
 #define SET_DEFAULT_LOAD_FACTOR 0.5
 
 typedef struct set set;

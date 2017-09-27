@@ -5,7 +5,7 @@
 
 #include "struct/set.h"
 
-#define N 10
+#define N 20
 
 int int_hash(const void *ref) {
 	return *((int *) ref);
@@ -25,24 +25,16 @@ int int_compare(const void *ref1, const void *ref2) {
 
 int main(int argc, char const *argv[]) {
 	set *s = set_create(sizeof(int), &int_hash, &int_compare);
-	int x;
+	int x = 5;
+	int i;
 
-	x = 5;
-	set_insert(s, &x);
-	set_insert(s, &x);
-	x = 2;
-	set_insert(s, &x);
-	x = 55;
-	set_insert(s, &x);
-	x = 105;
-	set_insert(s, &x);
-
-	x = 5;
-	printf("%d\n", set_contains(s, &x));
-	set_remove(s, &x);
-	printf("%d\n", set_contains(s, &x));
-	x = 55;
-	printf("%d\n", set_contains(s, &x));
+	srand(time(NULL));
+	for (i = 0; i < N; i++) {
+		x = rand() % (10*N);
+		set_insert(s, &x);
+		printf("%d\t%zu\n", x, set_get_size(s));
+	}
+	printf("\n%zu distinct numbers\n", set_get_size(s));
 
 	set_destroy(s);
 	return 0;
