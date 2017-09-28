@@ -3,6 +3,7 @@
 #include "core/maze.h"
 #include "core/solvers/bfs.h"
 #include "core/solvers/dfs.h"
+
 #include "struct/set.h"
 
 
@@ -36,10 +37,11 @@ void vec2_print(vec2 v) {
 
 int main(int argc, char const *argv[]) {
 	maze *m = maze_read(stdin);
-	solver *s = solver_dfs_create(m);
+	solver *s = solver_bfs_create(m);
 	list *path;
 	set *vertices;
-	vec2 v;
+	vec2 v, prev;
+	float length = 0;
 
 	solver_find(s);
 	path = solver_get_path(s);
@@ -48,19 +50,24 @@ int main(int argc, char const *argv[]) {
 		printf("No path to exit found\n");
 	} else {
 		vertices = set_create(sizeof(vec2), &vec2ref_hash, &vec2ref_comp);
+		list_pop_front(path, &prev);
 		while (!list_is_empty(path)) {
 			list_pop_front(path, &v);
 			vec2_print(v);
 			set_insert(vertices, &v);
+
+			length += vec2_dist(v, prev);
+			prev = v;
 		}
 		list_destroy(path);
+		printf("Path length: %.2f", length);
 		printf("\n\n");
 
 		maze_print(m, vertices);
 		set_destroy(vertices);
 	}
 
-	solver_dfs_destroy(s);
+	solver_bfs_destroy(s);
 	maze_destroy(m);
 	return 0;
 }
