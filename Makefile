@@ -309,7 +309,7 @@ endif
 
 all: $(BLD_DIR)/$(OUT)
 
-g: clean all
+g: all
 
 run:
 	@$(RUN_CMD) | tee $(STDOUT_LOG)
