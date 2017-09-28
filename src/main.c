@@ -5,6 +5,7 @@
 
 #include "struct/vec2.h"
 #include "struct/set.h"
+#include "struct/minheap.h"
 
 #define N 20
 
@@ -33,27 +34,34 @@ int int_compare(const void *ref1, const void *ref2) {
 }
 
 int main(int argc, char const *argv[]) {
+	heap *h = heap_create(sizeof(int));
 	set *s = set_create(sizeof(int), &int_hash, &int_compare);
-	int i;
+	int i, x, max = -1;
 
-	i = 0;
-	set_insert(s, &i);
-	printf("%zu\t%d\n", set_get_size(s), set_contains(s, &i));
+	heap_map_indices(h, &int_hash, &int_compare);
 
-	i = 2;
-	set_insert(s, &i);
-	printf("%zu\t%d\n", set_get_size(s), set_contains(s, &i));
+	srand(time(NULL));
+	for (i = 0; i < N; i++) {
+		do {
+			x = rand() % (2*N);
+		} while (set_contains(s, &x));
+		heap_add(h, &x, x);
+		set_insert(s, &x);
+		printf("%d\n", x);
+		if (x > max) {
+			max = x;
+		}
+	}
 
-	i = 1;
-	printf("%d\n", set_contains(s, &i));
+	printf("---\n");
 
-	i = 2;
-	set_remove(s, &i);
-	printf("%zu\t%d\n", set_get_size(s), set_contains(s, &i));
+	heap_update(h, &max, -1);
+	while (!heap_is_empty(h)) {
+		heap_pop(h, &x);
+		printf("%d\n", x);
+	}
 
-	i = 0;
-	printf("%d\n", set_contains(s, &i));
-
+	heap_destroy(h);
 	set_destroy(s);
 	return 0;
 }

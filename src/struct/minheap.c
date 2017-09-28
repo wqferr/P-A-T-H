@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "struct/map.h"
+
 typedef struct heap_node heap_node;
 
 #define LCHILD(p) (2*p+1)
@@ -17,6 +19,8 @@ struct heap {
 	size_t size;
 	size_t cap;
 	size_t elm_size;
+
+	map *indices;
 };
 
 struct heap_node {
@@ -30,11 +34,13 @@ void _heap_resize(heap *h, size_t cap);
 void _heap_try_shrink(heap *h);
 void _heap_add_node(heap *h, const void *elm, float pr);
 void _heap_swp(heap *h, size_t i, size_t j);
-void _heap_fix(heap *h, size_t c);
+void _heap_fix_up(heap *h, size_t p);
+void _heap_fix_down(heap *h, size_t c);
 
 heap *heap_create(size_t elm_size) {
 	heap *h = malloc(sizeof(*h));
 	h->elm = NULL;
+	h->indices = NULL;
 	h->size = 0;
 	h->elm_size = elm_size;
 	_heap_resize(h, 10);
@@ -46,9 +52,19 @@ void heap_destroy(heap *h) {
 	while (!heap_is_empty(h)) {
 		heap_pop(h, NULL);
 	}
+	if (h->indices != NULL) {
+		map_destroy(h->indices);	
+	}
 	free(h->elm);
 	free(h);
 }
+
+void heap_map_indices(heap *h, hash_f hash, cmp_f comp) {
+	h->indices = map_create(
+		h->elm_size, sizeof(size_t),
+		hash, comp);
+}
+
 
 void heap_ensure_capacity(heap *h, size_t cap) {
 	if (h->cap < cap) {
@@ -66,7 +82,7 @@ bool heap_is_empty(const heap *h) {
 
 
 bool heap_add(heap *h, const void *elm, float pr) {
-	size_t cur, par;
+	//size_t cur, par;
 	if (elm == NULL) {
 		return false;
 	}
@@ -75,12 +91,11 @@ bool heap_add(heap *h, const void *elm, float pr) {
 	}
 	_heap_add_node(h, elm, pr);
 
-	cur = h->size;
-	while(cur != 0 && _heap_cmp(h, cur, (par=PARENT(cur)))) {
+	//par = h->size;
+	_heap_fix_up(h, h->size);
+	/*while((cur=par) != 0 && _heap_cmp(h, cur, (par=PARENT(cur)))) {
 		_heap_swp(h, cur, par);
-		cur = par;
-	}
-
+	}*/
 	h->size++;
 	return true;
 }
@@ -99,9 +114,22 @@ int heap_pop(heap *h, void *out) {
 	h->size--;
 	h->elm[0] = h->elm[h->size];
 
-	_heap_fix(h, 0);
+	_heap_fix_down(h, 0);
 	_heap_try_shrink(h);
 	return pr;
+}
+
+bool heap_update(heap *h, const void *elm, float newpr) {
+	size_t idx;
+	if (h->indices == NULL || !map_get(h->indices, elm, &idx)) {
+		return false;
+	}
+	if (newpr > h->elm[idx].priority) {
+		return false;
+	}
+	h->elm[idx].priority = newpr;
+	_heap_fix_up(h, idx);
+	return true;
 }
 
 
@@ -126,21 +154,25 @@ void _heap_add_node(heap *h, const void *elm, float pr) {
 	h->elm[h->size] = n;
 }
 
-void _max_heapify(heap *h, size_t c) {
-	size_t p;
-	while(c != 0 && _heap_cmp(h, c, (p=PARENT(c)))) {
-		_heap_swp(h, c, p);
-		c = p;
-	}
-}
-
 void _heap_swp(heap *h, size_t i, size_t j) {
 	heap_node n = h->elm[i];
 	h->elm[i] = h->elm[j];
 	h->elm[j] = n;
+	if (h->indices != NULL) {
+		map_put(h->indices, h->elm[i].data, &i);
+		map_put(h->indices, h->elm[j].data, &j);
+	}
 }
 
-void _heap_fix(heap *h, size_t c) {
+void _heap_fix_up(heap *h, size_t p) {
+	size_t c;
+	while((c=p) != 0 && _heap_cmp(h, c, (p=PARENT(c)))) {
+		_heap_swp(h, c, p);
+	}
+	map_put(h->indices, h->elm[c].data, &c);
+}
+
+void _heap_fix_down(heap *h, size_t c) {
 	size_t new_parent = c;
 	size_t lchild = LCHILD(c);
 	size_t rchild = RCHILD(c);
@@ -153,6 +185,6 @@ void _heap_fix(heap *h, size_t c) {
 
 	if (new_parent != c) {
 		_heap_swp(h, new_parent, c);
-		_heap_fix(h, new_parent);
+		_heap_fix_down(h, new_parent);
 	}
 }
