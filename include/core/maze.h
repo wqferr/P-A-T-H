@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 #include "struct/vec2.h"
+#include "struct/list.h"
 
 typedef enum tile {
 	TILE_INVALID = 'x',
@@ -25,5 +26,7 @@ vec2 maze_get_start(const maze *m);
 vec2 maze_get_end(const maze *m);
 tile maze_get_tile(const maze *m, vec2 pos);
 bool maze_is_passable(const maze *m, vec2 pos);
+
+list *maze_get_neighbors(const maze *m, vec2 pos);
 
 #endif

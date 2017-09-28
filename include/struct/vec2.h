@@ -21,4 +21,7 @@ void vec2_sub(vec2 *v, vec2 u);
 
 int vec2_comp(vec2 v, vec2 u);
 
+int32_t vec2ref_hash(const void *ref);
+int vec2ref_comp(const void *ref1, const void *ref2);
+
 #endif

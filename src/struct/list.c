@@ -74,10 +74,10 @@ bool list_pop_back(list *l, void *out) {
 	return true;
 }
 
-void list_for_each(list *l, void (*f)(void *)) {
+void list_for_each(list *l, void (*f)(void *elm, void *arg), void *arg) {
 	list_node *node = l->head->next;
 	while (node != l->head) {
-		f(node->data);
+		f(node->data, arg);
 		node = node->next;
 	}
 }

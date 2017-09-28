@@ -6,6 +6,8 @@
 
 #include "struct/set.h"
 
+#define N_NEIGHBORS 8
+
 struct maze {
 	set *walls;
 	size_t width;
@@ -17,8 +19,6 @@ struct maze {
 
 
 char _chr_read_non_whitespace(FILE *instream);
-int32_t _vec2_hash(const void *ref);
-int _vec2_comp(const void *ref1, const void *ref2);
 
 maze *maze_read(FILE *instream) {
 	maze *m = malloc(sizeof(*m));
@@ -27,7 +27,7 @@ maze *maze_read(FILE *instream) {
 	char c;
 
 	fscanf(instream, "%zu %zu", &h, &w);
-	m->walls = set_create(sizeof(vec2), &_vec2_hash, &_vec2_comp);
+	m->walls = set_create(sizeof(vec2), &vec2ref_hash, &vec2ref_comp);
 
 	for (pos.y = 0; pos.y < h; pos.y++) {
 		for (pos.x = 0; pos.x < w; pos.x++) {
@@ -91,6 +91,32 @@ bool maze_is_passable(const maze *m, vec2 pos) {
 	return !set_contains(m->walls, &pos);
 }
 
+list *maze_get_neighbors(const maze *m, vec2 pos) {
+	static const vec2 deltas[] = {
+		{-1, -1},
+		{-1,  0},
+		{-1,  1},
+		{ 0, -1},
+		{ 0,  1},
+		{ 1, -1},
+		{ 1,  0},
+		{ 1,  1}
+	};
+
+	list *l = list_create(sizeof(vec2));
+	vec2 v;
+	int i;
+
+	for (i = 0; i < N_NEIGHBORS; i++) {
+		v = pos;
+		vec2_add(&v, deltas[i]);
+		if (maze_is_passable(m, v)) {
+			list_push_back(l, &v);	
+		}
+	}
+	return l;
+}
+
 
 char _chr_read_non_whitespace(FILE *instream) {
 	char c;
@@ -98,18 +124,4 @@ char _chr_read_non_whitespace(FILE *instream) {
 		c = fgetc(instream);
 	} while (isspace(c));
 	return c;
-}
-
-int32_t _vec2_hash(const void *ref) {
-	vec2 v = *((const vec2 *) ref);
-	return 31*v.x + v.y;
-}
-
-int _vec2_comp(const void *ref1, const void *ref2) {
-	vec2 u = *((const vec2 *) ref1);
-	vec2 v = *((const vec2 *) ref2);
-	if (u.x == v.x && u.y == v.y) {
-		return 0;
-	}
-	return 1;
 }

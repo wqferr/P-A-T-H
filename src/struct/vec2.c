@@ -27,3 +27,18 @@ void vec2_sub(vec2 *v, vec2 u) {
 int vec2_comp(vec2 v, vec2 u) {
 	return !(u.x == v.x && u.y == v.y);
 }
+
+
+int32_t vec2ref_hash(const void *ref) {
+	vec2 v = *((const vec2 *) ref);
+	return 31*v.x + v.y;
+}
+
+int vec2ref_comp(const void *ref1, const void *ref2) {
+	vec2 u = *((const vec2 *) ref1);
+	vec2 v = *((const vec2 *) ref2);
+	if (u.x == v.x && u.y == v.y) {
+		return 0;
+	}
+	return 1;
+}

@@ -17,6 +17,6 @@ void list_push_back(list *l, const void *elm);
 bool list_pop_front(list *l, void *out);
 bool list_pop_back(list *l, void *out);
 
-void list_for_each(list *l, void (*f)(void *));
+void list_for_each(list *l, void (*f)(void *elm, void *arg), void *arg);
 
 #endif
