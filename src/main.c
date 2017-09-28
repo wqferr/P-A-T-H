@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "core/maze.h"
 #include "core/solvers/bfs.h"
@@ -36,13 +37,18 @@ void vec2_print(vec2 v) {
 	printf("(%hd, %hd)\n", v.x, v.y);
 }
 
+float heur_L1_dist(void *data, const maze *m, vec2 pos) {
+	vec2 end = maze_get_end(m);
+	return abs(end.x - pos.x) + abs(end.y - pos.y);
+}
+
 float heur_L2_dist(void *data, const maze *m, vec2 pos) {
 	return vec2_dist(maze_get_end(m), pos);
 }
 
 int main(int argc, char const *argv[]) {
 	maze *m = maze_read(stdin);
-	solver *s = solver_bestfirst_create(m, &heur_L2_dist);
+	solver *s = solver_bestfirst_create(m, &heur_L1_dist);
 	list *path;
 	set *vertices;
 	vec2 v, prev;
