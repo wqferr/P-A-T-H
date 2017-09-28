@@ -2,6 +2,7 @@
 
 #include "core/maze.h"
 #include "core/solvers/bfs.h"
+#include "core/solvers/dfs.h"
 #include "struct/set.h"
 
 
@@ -35,7 +36,7 @@ void vec2_print(vec2 v) {
 
 int main(int argc, char const *argv[]) {
 	maze *m = maze_read(stdin);
-	solver *s = solver_bfs_create(m);
+	solver *s = solver_dfs_create(m);
 	list *path;
 	set *vertices;
 	vec2 v;
@@ -59,7 +60,7 @@ int main(int argc, char const *argv[]) {
 		set_destroy(vertices);
 	}
 
-	solver_bfs_destroy(s);
+	solver_dfs_destroy(s);
 	maze_destroy(m);
 	return 0;
 }

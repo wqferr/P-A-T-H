@@ -47,14 +47,6 @@ bool _solver_bfs_move(void *data, const maze *m, vec2 *pos) {
 	list *neighbors;
 	vec2 neigh;
 
-	while (set_contains(bfs.visited, pos)) {
-		if (list_is_empty(bfs.queue)) {
-			return false;
-		}
-		list_pop_front(bfs.queue, pos);
-	}
-	set_insert(bfs.visited, pos);
-
 	neighbors = maze_get_neighbors(m, *pos);
 	while (!list_is_empty(neighbors)) {
 		list_pop_front(neighbors, &neigh);
