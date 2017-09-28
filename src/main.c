@@ -5,6 +5,7 @@
 #include "core/solvers/bfs.h"
 #include "core/solvers/dfs.h"
 #include "core/solvers/bestfirst.h"
+#include "core/solvers/astar.h"
 
 #include "struct/set.h"
 
@@ -48,7 +49,7 @@ float heur_L2_dist(void *data, const maze *m, vec2 pos) {
 
 int main(int argc, char const *argv[]) {
 	maze *m = maze_read(stdin);
-	solver *s = solver_bestfirst_create(m, &heur_L1_dist);
+	solver *s = solver_astar_create(m, &heur_L1_dist);
 	list *path;
 	set *vertices;
 	vec2 v, prev;
@@ -78,7 +79,7 @@ int main(int argc, char const *argv[]) {
 		set_destroy(vertices);
 	}
 
-	solver_bestfirst_destroy(s);
+	solver_astar_destroy(s);
 	maze_destroy(m);
 	return 0;
 }

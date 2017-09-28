@@ -6,6 +6,8 @@
 #include "core/maze.h"
 #include "struct/list.h"
 
+typedef float (*heuristic_f)(void *data, const maze *m, vec2 cur);
+
 /* 
  * Updates current position.
  * pos initially holds the current position of the solver, and must be
