@@ -3,6 +3,7 @@
 #include "core/maze.h"
 #include "core/solvers/bfs.h"
 #include "core/solvers/dfs.h"
+#include "core/solvers/bestfirst.h"
 
 #include "struct/set.h"
 
@@ -35,9 +36,13 @@ void vec2_print(vec2 v) {
 	printf("(%hd, %hd)\n", v.x, v.y);
 }
 
+float heur_L2_dist(void *data, const maze *m, vec2 pos) {
+	return vec2_dist(maze_get_end(m), pos);
+}
+
 int main(int argc, char const *argv[]) {
 	maze *m = maze_read(stdin);
-	solver *s = solver_bfs_create(m);
+	solver *s = solver_bestfirst_create(m, &heur_L2_dist);
 	list *path;
 	set *vertices;
 	vec2 v, prev;
@@ -67,7 +72,7 @@ int main(int argc, char const *argv[]) {
 		set_destroy(vertices);
 	}
 
-	solver_bfs_destroy(s);
+	solver_bestfirst_destroy(s);
 	maze_destroy(m);
 	return 0;
 }
