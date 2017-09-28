@@ -163,7 +163,9 @@ void _heap_fix_up(heap *h, size_t p) {
 	while((c=p) != 0 && _heap_cmp(h, c, (p=PARENT(c)))) {
 		_heap_swp(h, c, p);
 	}
-	map_put(h->indices, h->elm[c].data, &c);
+	if (h->indices != NULL) {
+		map_put(h->indices, h->elm[c].data, &c);	
+	}
 }
 
 void _heap_fix_down(heap *h, size_t c) {
