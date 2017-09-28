@@ -82,7 +82,6 @@ bool heap_is_empty(const heap *h) {
 
 
 bool heap_add(heap *h, const void *elm, float pr) {
-	//size_t cur, par;
 	if (elm == NULL) {
 		return false;
 	}
@@ -90,12 +89,7 @@ bool heap_add(heap *h, const void *elm, float pr) {
 		heap_ensure_capacity(h, 2*h->cap);
 	}
 	_heap_add_node(h, elm, pr);
-
-	//par = h->size;
 	_heap_fix_up(h, h->size);
-	/*while((cur=par) != 0 && _heap_cmp(h, cur, (par=PARENT(cur)))) {
-		_heap_swp(h, cur, par);
-	}*/
 	h->size++;
 	return true;
 }
