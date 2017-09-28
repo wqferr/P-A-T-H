@@ -11,13 +11,14 @@ typedef struct vec2 {
 	coord y;
 } vec2;
 
-extern vec2 vec2_create(coord x, coord y);
+vec2 vec2_create(coord x, coord y);
 
-extern float vec2_norm(vec2 v);
-extern float vec2_dist(vec2 v, vec2 u);
+float vec2_norm(vec2 v);
+float vec2_dist(vec2 v, vec2 u);
 
-extern void vec2_add(vec2 *v, vec2 u);
-extern void vec2_sub(vec2 *v, vec2 u);
-extern void vec2_scale(vec2 *v, float scale);
+void vec2_add(vec2 *v, vec2 u);
+void vec2_sub(vec2 *v, vec2 u);
+
+int vec2_comp(vec2 v, vec2 u);
 
 #endif
