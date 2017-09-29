@@ -6,7 +6,7 @@
 #include "struct/set.h"
 #include "struct/map.h"
 #include "struct/list.h"
-#include "struct/minheap.h"
+#include "struct/heap.h"
 
 typedef struct astar_data {
 	set *visited;

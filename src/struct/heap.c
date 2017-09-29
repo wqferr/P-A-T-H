@@ -1,4 +1,4 @@
-#include "struct/minheap.h"
+#include "struct/heap.h"
 
 #include <stdlib.h>
 #include <string.h>
