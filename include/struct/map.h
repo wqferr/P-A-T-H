@@ -11,7 +11,7 @@
 #define MAP_DEFAULT_LOAD_FACTOR 0.5f
 
 /*
- * Associative array structure.
+ * A hash map structure.
  */
 typedef struct map map;
 
