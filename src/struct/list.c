@@ -74,14 +74,6 @@ bool list_pop_back(list *l, void *out) {
 	return true;
 }
 
-void list_for_each(list *l, void (*f)(void *elm, void *arg), void *arg) {
-	list_node *node = l->head->next;
-	while (node != l->head) {
-		f(node->data, arg);
-		node = node->next;
-	}
-}
-
 
 void _list_create_head_node(list *l) {
 	l->head = malloc(sizeof(*l->head));
