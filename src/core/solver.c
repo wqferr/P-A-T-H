@@ -46,7 +46,7 @@ bool solver_step(solver *s) {
 	return !s->stuck;
 }
 
-bool solver_stuck(const solver *s) {
+bool solver_is_stuck(const solver *s) {
 	return s->stuck;
 }
 
@@ -58,7 +58,7 @@ bool solver_done(const solver *s) {
 bool solver_find(solver *s) {
 	while (!solver_done(s)) {
 		solver_step(s);
-		if (solver_stuck(s)) {
+		if (solver_is_stuck(s)) {
 			return false;
 		}
 	}
