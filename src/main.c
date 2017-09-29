@@ -11,8 +11,46 @@
 
 
 #define COORD_IN_PATH_CHR 'o'
+#define POINTS_PER_LINE 3
 
-void maze_print(const maze *m, set *vertices) {
+
+void maze_print(FILE *outstream, const maze *m, set *in_path);
+void path_print(FILE *outstream, const maze *m, list *path);
+void vec2_print(FILE *outstream, vec2 v);
+
+float heur_L1(void *data, const maze *m, vec2 pos);
+float heur_L2(void *data, const maze *m, vec2 pos);
+
+
+#define solver_alg_create(m) (solver_astar_create(m, &heur_L2))
+#define solver_alg_destroy(s) (solver_astar_destroy(s))
+
+int main(int argc, char const *argv[]) {
+	maze *m = maze_read(stdin);
+	solver *s = solver_alg_create(m);
+	list *path;
+
+	if (solver_find(s)) {
+		path = solver_get_path(s);
+		path_print(stdout, m, path);
+		list_destroy(path);
+	} else {
+		printf("No path to exit found\n");
+	}
+
+	solver_alg_destroy(s);
+	maze_destroy(m);
+	return 0;
+}
+
+
+void vec2_print(FILE *outstream, vec2 v) {
+	fputc('(', outstream);
+	fprintf(outstream, "%-3hd, %-3hd", v.x, v.y);
+	fputc(')', outstream);
+}
+
+void maze_print(FILE *outstream, const maze *m, set *in_path) {
 	vec2 pos;
 	size_t w, h;
 	char c;
@@ -23,63 +61,57 @@ void maze_print(const maze *m, set *vertices) {
 			c = (char) maze_get_tile(m, pos);
 			if (c != TILE_START
 				&& c != TILE_END
-				&& set_contains(vertices, &pos)) {
+				&& set_contains(in_path, &pos)) {
 
-				printf("%c", COORD_IN_PATH_CHR);
+				fprintf(outstream, "%c", COORD_IN_PATH_CHR);
 			} else {
-				printf("%c", c);
+				fprintf(outstream, "%c", c);
 			}
 		}
-		printf("\n");
+		fprintf(outstream, "\n");
 	}
 }
 
-void vec2_print(vec2 v) {
-	printf("(%hd, %hd)\n", v.x, v.y);
+void path_print(FILE *outstream, const maze *m, list *path) {
+	set *in_path;
+	float len = 0;
+	vec2 u, v;
+
+	in_path = set_create(sizeof(vec2), &vec2ref_hash, &vec2ref_comp);
+	set_ensure_capacity(in_path, list_get_size(path));
+
+	list_pop_front(path, &u);
+	vec2_print(outstream, u);
+	fputc('\t', outstream);
+
+	while (!list_is_empty(path)) {
+		list_pop_front(path, &v);
+		set_insert(in_path, &v);
+
+		fprintf(outstream, "->\t");
+		vec2_print(outstream, v);
+
+		if ((set_get_size(in_path) % POINTS_PER_LINE) == 0) {
+			fprintf(outstream, "\n\t\t");
+		} else {
+			fputc('\t', outstream);
+		}
+
+		len += vec2_dist(u, v);
+		u = v;
+	}
+	fprintf(outstream, "\n\nPath length: %.2f\n\n", len);
+	maze_print(outstream, m, in_path);
+
+	set_destroy(in_path);
 }
 
-float heur_L1_dist(void *data, const maze *m, vec2 pos) {
+
+float heur_L1(void *data, const maze *m, vec2 pos) {
 	vec2 end = maze_get_end(m);
 	return abs(end.x - pos.x) + abs(end.y - pos.y);
 }
 
-float heur_L2_dist(void *data, const maze *m, vec2 pos) {
+float heur_L2(void *data, const maze *m, vec2 pos) {
 	return vec2_dist(maze_get_end(m), pos);
-}
-
-int main(int argc, char const *argv[]) {
-	maze *m = maze_read(stdin);
-	solver *s = solver_astar_create(m, &heur_L2_dist);
-	list *path;
-	set *vertices;
-	vec2 v, prev;
-	float length = 0;
-
-	solver_find(s);
-	path = solver_get_path(s);
-
-	if (path == NULL) {
-		printf("No path to exit found\n");
-	} else {
-		vertices = set_create(sizeof(vec2), &vec2ref_hash, &vec2ref_comp);
-		list_pop_front(path, &prev);
-		while (!list_is_empty(path)) {
-			list_pop_front(path, &v);
-			vec2_print(v);
-			set_insert(vertices, &v);
-
-			length += vec2_dist(v, prev);
-			prev = v;
-		}
-		list_destroy(path);
-		printf("Path length: %.2f", length);
-		printf("\n\n");
-
-		maze_print(m, vertices);
-		set_destroy(vertices);
-	}
-
-	solver_astar_destroy(s);
-	maze_destroy(m);
-	return 0;
 }
