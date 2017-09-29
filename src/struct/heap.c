@@ -68,6 +68,7 @@ void heap_map_indices(heap *h, hash_f hash, cmp_f comp) {
 
 void heap_ensure_capacity(heap *h, size_t cap) {
 	if (h->cap < cap) {
+
 		_heap_resize(h, cap);
 	}
 }
@@ -94,7 +95,7 @@ bool heap_add(heap *h, const void *elm, float pr) {
 	return true;
 }
 
-int heap_pop(heap *h, void *out) {
+float heap_pop(heap *h, void *out) {
 	int pr;
 	if (h->size == 0) {
 		return 0;
