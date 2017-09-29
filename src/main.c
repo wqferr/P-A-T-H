@@ -49,7 +49,7 @@ float heur_L2_dist(void *data, const maze *m, vec2 pos) {
 
 int main(int argc, char const *argv[]) {
 	maze *m = maze_read(stdin);
-	solver *s = solver_astar_create(m, &heur_L1_dist);
+	solver *s = solver_astar_create(m, &heur_L2_dist);
 	list *path;
 	set *vertices;
 	vec2 v, prev;

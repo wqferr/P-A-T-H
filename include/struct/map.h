@@ -4,7 +4,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "misc/func.h"
+#include "misc/hash.h"
+#include "misc/compare.h"
 
 #define MAP_INITIAL_CAP 20
 #define MAP_DEFAULT_LOAD_FACTOR 0.5f

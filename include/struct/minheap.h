@@ -4,7 +4,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "misc/func.h"
+#include "misc/hash.h"
+#include "misc/compare.h"
 
 /* Min heap structure */
 typedef struct heap heap;

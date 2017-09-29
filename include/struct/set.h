@@ -4,7 +4,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "misc/func.h"
+#include "misc/hash.h"
+#include "misc/compare.h"
 
 
 #define SET_INITIAL_CAP 20
