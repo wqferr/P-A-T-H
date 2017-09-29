@@ -1,3 +1,4 @@
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,15 +29,24 @@ float heur_L2(void *data, const maze *m, vec2 pos);
 int main(int argc, char const *argv[]) {
 	maze *m = maze_read(stdin);
 	solver *s = solver_alg_create(m);
+	bool success;
 	list *path;
+	clock_t t;
 
-	if (solver_find(s)) {
+	t = clock();
+	success = solver_find(s);
+	t = clock() - t;
+
+	if (success) {
 		path = solver_get_path(s);
 		path_print(stdout, m, path);
 		list_destroy(path);
 	} else {
 		printf("No path to exit found\n");
 	}
+	printf(
+		"=======\nStopped in %.4f seconds\n",
+		((double) t) / (CLOCKS_PER_SEC));
 
 	solver_alg_destroy(s);
 	maze_destroy(m);
