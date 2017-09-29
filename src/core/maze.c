@@ -26,7 +26,7 @@ maze *maze_read(FILE *instream) {
 	vec2 pos;
 	char c;
 
-	fscanf(instream, "%zu %zu", &h, &w);
+	fscanf(instream, "%lu %lu", &h, &w);
 	m->walls = set_create(sizeof(vec2), &vec2ref_hash, &vec2ref_comp);
 
 	for (pos.y = 0; pos.y < h; pos.y++) {
