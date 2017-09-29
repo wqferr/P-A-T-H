@@ -1,10 +1,5 @@
 #include "struct/vec2.h"
 
-vec2 vec2_create(coord x, coord y) {
-	vec2 v = {x, y};
-	return v;
-}
-
 float vec2_norm(vec2 v) {
 	return sqrt((v.x*v.x) + (v.y*v.y));
 }
