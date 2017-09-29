@@ -20,7 +20,6 @@ bool set_set_load_factor(set *s, float lf);
 void set_ensure_capacity(set *s, size_t cap);
 size_t set_get_size(const set *s);
 bool set_is_empty(const set *s);
-bool set_is_full(const set *s);
 
 bool set_insert(set *s, const void *elm);
 bool set_remove(set *s, const void *elm);

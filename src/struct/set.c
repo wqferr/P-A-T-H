@@ -41,10 +41,6 @@ bool set_is_empty(const set *s) {
 	return map_is_empty(s->vals);
 }
 
-bool set_is_full(const set *s) {
-	return map_is_full(s->vals);
-}
-
 bool set_insert(set *s, const void *elm) {
 	return map_put(s->vals, elm, NULL);
 }

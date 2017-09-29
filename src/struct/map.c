@@ -4,8 +4,7 @@
 #include <string.h>
 
 #define MAP_IDX_FOUND 0
-#define MAP_FULL 1
-#define MAP_DUPL_INSERTION 2
+#define MAP_DUPL_INSERTION 1
 
 #define MAP_ELM_FOUND 0
 #define MAP_ELM_NOT_FOUND 1
@@ -93,7 +92,8 @@ bool map_set_load_factor(map *m, float lf) {
 	return true;
 }
 
-void map_ensure_capacity(map *m, size_t cap) {
+void map_ensure_capacity(map *m, size_t size) {
+	size_t cap = (size / m->load_factor) + 1;
 	if (m->cap < cap) {
 		_map_resize(m, cap);
 	}
@@ -107,23 +107,13 @@ bool map_is_empty(const map *m) {
 	return m->size == 0;
 }
 
-bool map_is_full(const map *m) {
-	return m->size == m->cap;
-}
-
 bool map_put(map *m, const void *key, const void *val) {
 	int32_t hash = m->key_hash(key);
 	int idx_res;
 	size_t idx;
 
 	idx_res = _map_find_empty_idx(m, key, hash, &idx);
-	if (idx_res == MAP_FULL) {
-		return false;
-	}
 	if (idx_res == MAP_DUPL_INSERTION) {
-		// TODO deal with duplicate insertion
-		// return previous pointer somehow
-		//_map_create_node(m, idx, key, val, hash);
 		memcpy(m->elm[idx].key, key, m->key_size);
 		memcpy(m->elm[idx].val, val, m->val_size);
 		m->elm[idx].hash = hash;
@@ -212,9 +202,6 @@ int _map_find_empty_idx(
 	size_t *idx) {
 
 	size_t i;
-	if (map_is_full(m)) {
-		return MAP_FULL;
-	}
 	i = ((hash % m->cap) + m->cap) % m->cap;
 
 	while (!(m->elm[i].empty || m->elm[i].removed)) {
