@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #ifndef MAZE_H
 #define MAZE_H 1
 

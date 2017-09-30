@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #ifndef HASH_H
 #define HASH_H 1
 

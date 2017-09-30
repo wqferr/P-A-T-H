@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "core/solver.h"
 
 #include <stdlib.h>

@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #ifndef SOLVER_H
 #define SOLVER_H 1
 

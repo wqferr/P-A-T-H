@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #ifndef VEC2_H
 #define VEC2_H 1
 

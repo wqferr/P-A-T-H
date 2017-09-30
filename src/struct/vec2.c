@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "struct/vec2.h"
 
 float vec2_norm(vec2 v) {

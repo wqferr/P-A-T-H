@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "core/solvers/astar.h"
 
 #include <float.h>

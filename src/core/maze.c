@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "core/maze.h"
 
 #include <ctype.h>

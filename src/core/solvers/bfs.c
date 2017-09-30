@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "core/solvers/bfs.h"
 
 #include <stdlib.h>

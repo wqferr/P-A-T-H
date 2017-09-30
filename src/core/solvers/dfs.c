@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "core/solvers/dfs.h"
 
 #include <stdlib.h>

@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #ifndef MAP_H
 #define MAP_H 1
 

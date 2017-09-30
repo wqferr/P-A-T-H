@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "struct/heap.h"
 
 #include <stdlib.h>

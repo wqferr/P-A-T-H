@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "struct/list.h"
 
 #include <stdlib.h>

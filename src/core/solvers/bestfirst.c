@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "core/solvers/bestfirst.h"
 
 #include <stdlib.h>

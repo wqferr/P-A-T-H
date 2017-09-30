@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "struct/set.h"
 
 #include <stdlib.h>

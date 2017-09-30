@@ -1,3 +1,7 @@
+/*
+ * William Quelho Ferreira
+ */
+
 #include "struct/map.h"
 
 #include <stdlib.h>
