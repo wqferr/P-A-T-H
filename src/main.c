@@ -26,37 +26,90 @@ void vec2_print(FILE *outstream, vec2 v);
 float heur_L1(void *data, const maze *m, vec2 pos);
 float heur_L2(void *data, const maze *m, vec2 pos);
 
+enum solver_alg {
+	DFS,
+	BFS,
+	BEST_FIRST,
+	A_STAR,
+	N_ALGS
+};
 
-#define solver_alg_create(m) (solver_astar_create(m, &heur_L2))
-#define solver_alg_destroy(s) (solver_astar_destroy(s))
+solver *create_solver_type(const maze *m, enum solver_alg alg);
+void destroy_solver_type(solver *s, enum solver_alg alg);
 
 int main(int argc, char const *argv[]) {
 	maze *m = maze_read(stdin);
-	solver *s = solver_alg_create(m);
+	solver *s;
 	bool success;
 	list *path;
 	clock_t t;
+	enum solver_alg cur_alg;
+	const char *algorithms[] = {
+		"Depth first search",
+		"Breadth first search",
+		"Best first search",
+		"A*"
+	};
 
-	t = clock();
-	success = solver_find(s);
-	t = clock() - t;
+	for (cur_alg = 0; cur_alg < N_ALGS; cur_alg++) {
+		printf("Current algorithm: %s\n", algorithms[cur_alg]);
+		s = create_solver_type(m, cur_alg);
 
-	if (success) {
-		path = solver_get_path(s);
-		path_print(stdout, m, path);
-		list_destroy(path);
-	} else {
-		printf("No path to exit found\n");
+		t = clock();
+		success = solver_find(s);
+		t = clock() - t;
+
+		if (success) {
+			path = solver_get_path(s);
+			path_print(stdout, m, path);
+			list_destroy(path);
+		} else {
+			printf("No path to exit found\n");
+		}
+		printf(
+			"=======\nStopped in %.4f seconds\n=======\n\n",
+			((double) t) / CLOCKS_PER_SEC);
+
+		destroy_solver_type(s, cur_alg);
 	}
-	printf(
-		"=======\nStopped in %.4f seconds\n",
-		((double) t) / (CLOCKS_PER_SEC));
-
-	solver_alg_destroy(s);
+	
 	maze_destroy(m);
 	return 0;
 }
 
+solver *create_solver_type(const maze *m, enum solver_alg alg) {
+	switch (alg) {
+		case DFS:
+			return solver_dfs_create(m);
+		case BFS:
+			return solver_bfs_create(m);
+		case BEST_FIRST:
+			return solver_bestfirst_create(m, heur_L2);
+		case A_STAR:
+			return solver_astar_create(m, heur_L2);
+		default:
+			return NULL;
+	}
+}
+
+void destroy_solver_type(solver *s, enum solver_alg alg) {
+	switch (alg) {
+		case DFS:
+			solver_dfs_destroy(s);
+			break;
+		case BFS:
+			solver_bfs_destroy(s);
+			break;
+		case BEST_FIRST:
+			solver_bestfirst_destroy(s);
+			break;
+		case A_STAR:
+			solver_astar_destroy(s);
+			break;
+		default:
+			break;
+	}
+}
 
 void vec2_print(FILE *outstream, vec2 v) {
 	fputc('(', outstream);
