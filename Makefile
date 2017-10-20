@@ -75,7 +75,7 @@ LIBS := m
 # Compile flags
 #
 
-C_FLAGS = -ansi -pedantic -Wall -Werror -L$(LIB_DIR) -I$(INC_DIR) $(addprefix -l,$(LIBS))
+C_FLAGS = -ansi -pedantic -Wall -Werror -fopenmp -L$(LIB_DIR) -I$(INC_DIR) $(addprefix -l,$(LIBS))
 
 
 #

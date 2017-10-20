@@ -4,6 +4,7 @@
 
 #include "core/solvers/bestfirst.h"
 
+#include <float.h>
 #include <stdlib.h>
 
 #include "struct/set.h"
@@ -13,7 +14,6 @@
 
 typedef struct bestfirst_data {
 	set *visited;
-	heap *open;
 	map *parent;
 
 	heuristic_f heuristic;
@@ -33,7 +33,6 @@ solver *solver_bestfirst_create(const maze *m, heuristic_f h) {
 void solver_bestfirst_destroy(solver *s) {
 	bestfirst_data *bestf = (bestfirst_data *) solver_get_data(s);
 	set_destroy(bestf->visited);
-	heap_destroy(bestf->open);
 	map_destroy(bestf->parent);
 	free(bestf);
 	solver_destroy(s);
@@ -42,7 +41,6 @@ void solver_bestfirst_destroy(solver *s) {
 void _solver_bestfirst_init(solver *s, heuristic_f h) {
 	bestfirst_data *bestf = malloc(sizeof(*bestf));
 	bestf->visited = set_create(sizeof(vec2), &vec2ref_hash, &vec2ref_comp);
-	bestf->open = heap_create(sizeof(vec2));
 	bestf->parent = map_create(
 		sizeof(vec2), sizeof(vec2), &vec2ref_hash, &vec2ref_comp);
 	bestf->heuristic = h;
@@ -52,26 +50,34 @@ void _solver_bestfirst_init(solver *s, heuristic_f h) {
 bool _solver_bestfirst_move(void *data, const maze *m, vec2 *pos) {
 	bestfirst_data bestf = *((bestfirst_data *) data);
 	list *neighbors;
-	vec2 neigh;
-	float h;
+	vec2 neigh, best;
+	float h, h_best;
+	bool has_next = false;
 
+	h_best = FLT_MAX;
 	set_insert(bestf.visited, pos);
 	neighbors = maze_get_neighbors(m, *pos);
+
 	while (!list_is_empty(neighbors)) {
 		list_pop_front(neighbors, &neigh);
 		if (!set_contains(bestf.visited, &neigh)) {
+			has_next = true;
 			map_put(bestf.parent, &neigh, pos);
 
 			h = bestf.heuristic(data, m, neigh);
-			heap_add(bestf.open, &neigh, h);
+			if (h < h_best) {
+				h_best = h;
+				best = neigh;
+			}
 		}
 	}
 	list_destroy(neighbors);
 
-	if (heap_is_empty(bestf.open)) {
+	if (!has_next) {
 		return false;
 	}
-	heap_pop(bestf.open, pos);
+
+	*pos = best;
 	return true;
 }
 

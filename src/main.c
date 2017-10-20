@@ -2,7 +2,7 @@
  * William Quelho Ferreira
  */
 
-#include <time.h>
+#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -42,7 +42,7 @@ int main(int argc, char const *argv[]) {
 	solver *s;
 	bool success;
 	list *path;
-	clock_t t;
+	double t;
 	enum solver_alg cur_alg;
 	const char *algorithms[] = {
 		"Depth first search",
@@ -55,9 +55,9 @@ int main(int argc, char const *argv[]) {
 		printf("Current algorithm: %s\n", algorithms[cur_alg]);
 		s = create_solver_type(m, cur_alg);
 
-		t = clock();
+		t = omp_get_wtime();
 		success = solver_find(s);
-		t = clock() - t;
+		t = omp_get_wtime() - t;
 
 		if (success) {
 			path = solver_get_path(s);
@@ -66,9 +66,8 @@ int main(int argc, char const *argv[]) {
 		} else {
 			printf("No path to exit found\n");
 		}
-		printf(
-			"=======\nStopped in %.4f seconds\n=======\n\n",
-			((double) t) / CLOCKS_PER_SEC);
+		printf("=======\nStopped in %.4f seconds\n=======\n\n", t);
+		fflush(stdout);
 
 		destroy_solver_type(s, cur_alg);
 	}
