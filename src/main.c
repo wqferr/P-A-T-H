@@ -10,7 +10,7 @@
 #include "core/solvers/bfs.h"
 #include "core/solvers/dfs.h"
 #include "core/solvers/bestfirst.h"
-#include "core/solvers/astar.h"
+#include "core/solvers/a.h"
 
 #include "struct/set.h"
 
@@ -23,16 +23,16 @@ void maze_print(FILE *outstream, const maze *m, set *in_path);
 void path_print(FILE *outstream, const maze *m, list *path);
 void vec2_print(FILE *outstream, vec2 v);
 
-float heur_L1(void *data, const maze *m, vec2 pos);
 float heur_L2(void *data, const maze *m, vec2 pos);
+float heur_5L2(void *data, const maze *m, vec2 pos);
 
 enum solver_alg {
 	DFS,
 	BFS,
-	BEST_FIRST_L1,
+	BEST_FIRST_5L2,
 	BEST_FIRST_L2,
-	A_STAR_L1,
-	A_STAR_L2,
+	A_5L2,
+	A_L2,
 	N_ALGS
 };
 
@@ -50,10 +50,10 @@ int main(int argc, char const *argv[]) {
 	const char *algorithms[] = {
 		"Depth first search",
 		"Breadth first search",
-		"Best first search (L1)",
-		"Best first search (L2)",
-		"A* (L1)",
-		"A* (L2)"
+		"Best first search (5 x L2 distance)",
+		"Best first search (L2 distance)",
+		"A (5 x L2 distance)", /* Not A* since heuristic is not optimistic */
+		"A (L2 distance)"
 	};
 
 	for (cur_alg = 0; cur_alg < N_ALGS; cur_alg++) {
@@ -92,14 +92,14 @@ solver *create_solver_type(const maze *m, enum solver_alg alg) {
 			return solver_dfs_create(m);
 		case BFS:
 			return solver_bfs_create(m);
-		case BEST_FIRST_L1:
-			return solver_bestfirst_create(m, &heur_L1);
+		case BEST_FIRST_5L2:
+			return solver_bestfirst_create(m, &heur_5L2);
 		case BEST_FIRST_L2:
 			return solver_bestfirst_create(m, &heur_L2);
-		case A_STAR_L1:
-			return solver_astar_create(m, &heur_L1);
-		case A_STAR_L2:
-			return solver_astar_create(m, &heur_L2);
+		case A_5L2:
+			return solver_a_create(m, &heur_5L2);
+		case A_L2:
+			return solver_a_create(m, &heur_L2);
 		default:
 			return NULL;
 	}
@@ -113,13 +113,13 @@ void destroy_solver_type(solver *s, enum solver_alg alg) {
 		case BFS:
 			solver_bfs_destroy(s);
 			break;
-		case BEST_FIRST_L1:
+		case BEST_FIRST_5L2:
 		case BEST_FIRST_L2:
 			solver_bestfirst_destroy(s);
 			break;
-		case A_STAR_L1:
-		case A_STAR_L2:
-			solver_astar_destroy(s);
+		case A_5L2:
+		case A_L2:
+			solver_a_destroy(s);
 			break;
 		default:
 			break;
@@ -189,9 +189,8 @@ void path_print(FILE *outstream, const maze *m, list *path) {
 }
 
 
-float heur_L1(void *data, const maze *m, vec2 pos) {
-	vec2 end = maze_get_end(m);
-	return abs(end.x - pos.x) + abs(end.y - pos.y);
+float heur_5L2(void *data, const maze *m, vec2 pos) {
+	return 5*heur_L2(data, m, pos);
 }
 
 float heur_L2(void *data, const maze *m, vec2 pos) {
