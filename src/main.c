@@ -29,8 +29,10 @@ float heur_L2(void *data, const maze *m, vec2 pos);
 enum solver_alg {
 	DFS,
 	BFS,
-	BEST_FIRST,
-	A_STAR,
+	BEST_FIRST_L1,
+	BEST_FIRST_L2,
+	A_STAR_L1,
+	A_STAR_L2,
 	N_ALGS
 };
 
@@ -43,16 +45,24 @@ int main(int argc, char const *argv[]) {
 	bool success;
 	list *path;
 	double t;
+	int nchar;
 	enum solver_alg cur_alg;
 	const char *algorithms[] = {
 		"Depth first search",
 		"Breadth first search",
-		"Best first search",
-		"A*"
+		"Best first search (L1)",
+		"Best first search (L2)",
+		"A* (L1)",
+		"A* (L2)"
 	};
 
 	for (cur_alg = 0; cur_alg < N_ALGS; cur_alg++) {
-		printf("Current algorithm: %s\n", algorithms[cur_alg]);
+		printf("Algorithm: %s%n\n", algorithms[cur_alg], &nchar);
+		while (nchar > 0) {
+			nchar--;
+			putchar('-');
+		}
+		printf("\n\n");
 		s = create_solver_type(m, cur_alg);
 
 		t = omp_get_wtime();
@@ -66,7 +76,7 @@ int main(int argc, char const *argv[]) {
 		} else {
 			printf("No path to exit found\n");
 		}
-		printf("=======\nStopped in %.4f seconds\n=======\n\n", t);
+		printf("\nAlgorithm finished in %.4f seconds\n==============\n\n\n", t);
 		fflush(stdout);
 
 		destroy_solver_type(s, cur_alg);
@@ -82,10 +92,14 @@ solver *create_solver_type(const maze *m, enum solver_alg alg) {
 			return solver_dfs_create(m);
 		case BFS:
 			return solver_bfs_create(m);
-		case BEST_FIRST:
-			return solver_bestfirst_create(m, heur_L2);
-		case A_STAR:
-			return solver_astar_create(m, heur_L2);
+		case BEST_FIRST_L1:
+			return solver_bestfirst_create(m, &heur_L1);
+		case BEST_FIRST_L2:
+			return solver_bestfirst_create(m, &heur_L2);
+		case A_STAR_L1:
+			return solver_astar_create(m, &heur_L1);
+		case A_STAR_L2:
+			return solver_astar_create(m, &heur_L2);
 		default:
 			return NULL;
 	}
@@ -99,10 +113,12 @@ void destroy_solver_type(solver *s, enum solver_alg alg) {
 		case BFS:
 			solver_bfs_destroy(s);
 			break;
-		case BEST_FIRST:
+		case BEST_FIRST_L1:
+		case BEST_FIRST_L2:
 			solver_bestfirst_destroy(s);
 			break;
-		case A_STAR:
+		case A_STAR_L1:
+		case A_STAR_L2:
 			solver_astar_destroy(s);
 			break;
 		default:
