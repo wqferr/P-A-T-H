@@ -100,11 +100,11 @@ list *maze_get_neighbors(const maze *m, vec2 pos) {
 		{-1, -1},
 		{-1,  0},
 		{-1,  1},
-		{ 0, -1},
 		{ 0,  1},
-		{ 1, -1},
+		{ 1,  1},
 		{ 1,  0},
-		{ 1,  1}
+		{ 1, -1},
+		{ 0, -1},
 	};
 
 	list *l = list_create(sizeof(vec2));
