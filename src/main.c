@@ -2,6 +2,11 @@
  * William Quelho Ferreira
  */
 
+/*
+ * OpenMP only for capturing time elapsed per algorithm run.
+ * time.h has poor time resolution on windows, so omp_get_wtime was used
+ * instead.
+ */
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +17,7 @@
 #include "core/solvers/bestfirst.h"
 #include "core/solvers/a.h"
 
+#include "struct/list.h"
 #include "struct/set.h"
 
 
@@ -29,7 +35,6 @@ float heur_5L2(void *data, const maze *m, vec2 pos);
 enum solver_alg {
 	DFS,
 	BFS,
-	BEST_FIRST_5L2,
 	BEST_FIRST_L2,
 	A_5L2,
 	A_L2,
@@ -50,8 +55,7 @@ int main(int argc, char const *argv[]) {
 	const char *algorithms[] = {
 		"Depth first search",
 		"Breadth first search",
-		"Best first search (5 x L2 distance)",
-		"Best first search (L2 distance)",
+		"Best-first search (L2 distance)",
 		"A (5 x L2 distance)", /* Not A* since heuristic is not optimistic */
 		"A (L2 distance)"
 	};
@@ -92,8 +96,6 @@ solver *create_solver_type(const maze *m, enum solver_alg alg) {
 			return solver_dfs_create(m);
 		case BFS:
 			return solver_bfs_create(m);
-		case BEST_FIRST_5L2:
-			return solver_bestfirst_create(m, &heur_5L2);
 		case BEST_FIRST_L2:
 			return solver_bestfirst_create(m, &heur_L2);
 		case A_5L2:
@@ -113,7 +115,6 @@ void destroy_solver_type(solver *s, enum solver_alg alg) {
 		case BFS:
 			solver_bfs_destroy(s);
 			break;
-		case BEST_FIRST_5L2:
 		case BEST_FIRST_L2:
 			solver_bestfirst_destroy(s);
 			break;
